@@ -13,9 +13,9 @@ window.MATCHPOINT_DOWNLOAD_CONFIG = {
           helper: "Direct installer download",
         },
         macos: {
-          label: "Download for macOS",
-          fileName: "Matchpoint_0.2.0_universal.dmg",
-          helper: "Universal macOS installer",
+          label: "Download for macOS (Apple Silicon)",
+          fileName: "Matchpoint_0.2.0_aarch64.dmg",
+          helper: "For M1, M2, M3, and newer Macs",
         },
       },
     },
