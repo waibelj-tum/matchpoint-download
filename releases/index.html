@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>All Matchpoint Releases</title>
+    <meta
+      name="description"
+      content="Direct downloads for all published Matchpoint desktop installers."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../site.css" />
+    <script src="../download-config.js"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div class="page-header">
+          <div>
+            <div class="eyebrow">Archive</div>
+            <h1 class="headline" style="font-size: clamp(2.6rem, 8vw, 5rem); max-width: 10ch;">
+              All releases
+            </h1>
+          </div>
+          <a href="../">Back to latest</a>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="all-releases-heading">
+        <h2 id="all-releases-heading" style="margin: 0; font-size: 1.4rem;">
+          Direct installer downloads
+        </h2>
+        <div id="release-list" class="release-list"></div>
+      </section>
+    </main>
+
+    <script>
+      const config = window.MATCHPOINT_DOWNLOAD_CONFIG;
+
+      if (!config) {
+        throw new Error("Missing MATCHPOINT_DOWNLOAD_CONFIG.");
+      }
+
+      const releaseBase = `https://github.com/${config.owner}/${config.repository}/releases/download`;
+      const releaseList = document.getElementById("release-list");
+
+      for (const release of config.releases) {
+        const isLatest = release.version === config.latestRelease;
+        const section = document.createElement("article");
+        section.className = "release-section";
+
+        const heading = document.createElement("div");
+        heading.className = "release-heading";
+
+        const titleBlock = document.createElement("div");
+        const title = document.createElement("h3");
+        title.textContent = `${config.productName} ${release.version}`;
+        const subtitle = document.createElement("p");
+        subtitle.textContent = isLatest ? "Current featured release" : "Previous release";
+        titleBlock.append(title, subtitle);
+
+        heading.append(titleBlock);
+        if (isLatest) {
+          const badge = document.createElement("span");
+          badge.className = "badge";
+          badge.textContent = "Latest";
+          heading.append(badge);
+        }
+
+        const grid = document.createElement("div");
+        grid.className = "download-grid";
+
+        for (const platformName of ["windows", "macos"]) {
+          const asset = release.assets[platformName];
+          if (!asset) {
+            continue;
+          }
+
+          const card = document.createElement("article");
+          card.className = "download-card";
+
+          const platform = document.createElement("div");
+          platform.className = "platform";
+
+          const strong = document.createElement("strong");
+          strong.textContent = platformName === "windows" ? "Windows" : "macOS";
+          platform.append(strong);
+
+          const link = document.createElement("a");
+          link.className =
+            platformName === "windows" ? "download-button" : "download-button secondary";
+          link.href = `${releaseBase}/${release.version}/${asset.fileName}`;
+          link.textContent = asset.label;
+          link.setAttribute("download", "");
+
+          const helper = document.createElement("p");
+          helper.className = "helper";
+          helper.textContent = `${asset.helper} • ${asset.fileName}`;
+
+          card.append(platform, link, helper);
+          grid.append(card);
+        }
+
+        section.append(heading, grid);
+        releaseList.append(section);
+      }
+    </script>
+  </body>
+</html>

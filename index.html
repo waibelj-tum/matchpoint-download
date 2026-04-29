@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Matchpoint Downloads</title>
+    <meta
+      name="description"
+      content="Direct downloads for the latest Matchpoint desktop installers."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="site.css" />
+    <script src="download-config.js"></script>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div class="eyebrow" id="release-tag">Latest release</div>
+        <h1 class="headline" id="product-name">Matchpoint</h1>
+      </section>
+
+      <section class="panel" aria-labelledby="downloads-heading">
+        <h2 id="downloads-heading" class="headline" style="font-size: clamp(2rem, 6vw, 3.6rem); max-width: 16ch; margin: 0;">
+          Pick your installer.
+        </h2>
+
+        <div class="download-grid">
+          <article class="download-card">
+            <div class="platform">
+              <strong>Windows</strong>
+              <span class="badge">Direct</span>
+            </div>
+            <a id="windows-download" class="download-button" href="#">
+              Download for Windows
+            </a>
+            <p id="windows-helper" class="helper"></p>
+          </article>
+
+          <article class="download-card">
+            <div class="platform">
+              <strong>macOS</strong>
+              <span class="badge">Direct</span>
+            </div>
+            <a id="macos-download" class="download-button secondary" href="#">
+              Download for macOS
+            </a>
+            <p id="macos-helper" class="helper"></p>
+          </article>
+        </div>
+
+        <div class="fine-print">
+          <span id="version-line"></span>
+          <a class="page-link" href="releases/">Browse all releases</a>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const config = window.MATCHPOINT_DOWNLOAD_CONFIG;
+
+      if (!config) {
+        throw new Error("Missing MATCHPOINT_DOWNLOAD_CONFIG.");
+      }
+
+      const release = config.releases.find(
+        (item) => item.version === config.latestRelease,
+      );
+
+      if (!release) {
+        throw new Error(`Latest release ${config.latestRelease} is not configured.`);
+      }
+
+      const releaseBase = `https://github.com/${config.owner}/${config.repository}/releases`;
+      const directBase = `${releaseBase}/download/${release.version}`;
+
+      const assets = {
+        windows: {
+          ...release.assets.windows,
+          url: `${directBase}/${release.assets.windows.fileName}`,
+        },
+        macos: {
+          ...release.assets.macos,
+          url: `${directBase}/${release.assets.macos.fileName}`,
+        },
+      };
+
+      document.title = `${config.productName} Downloads`;
+      document.getElementById("product-name").textContent = config.productName;
+      document.getElementById("release-tag").textContent = `Latest release ${release.version}`;
+      document.getElementById("version-line").textContent = `${config.productName} ${release.version}`;
+
+      const windowsLink = document.getElementById("windows-download");
+      windowsLink.href = assets.windows.url;
+      windowsLink.setAttribute("download", "");
+      windowsLink.textContent = assets.windows.label;
+      document.getElementById("windows-helper").textContent = `${assets.windows.helper} • ${assets.windows.fileName}`;
+
+      const macosLink = document.getElementById("macos-download");
+      macosLink.href = assets.macos.url;
+      macosLink.setAttribute("download", "");
+      macosLink.textContent = assets.macos.label;
+      document.getElementById("macos-helper").textContent = `${assets.macos.helper} • ${assets.macos.fileName}`;
+    </script>
+  </body>
+</html>
